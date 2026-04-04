@@ -1,3 +1,0 @@
-/home/t3m3d/Documents/GitHub/klennie/build/CMakeFiles/kprocview.dir
-/home/t3m3d/Documents/GitHub/klennie/build/CMakeFiles/edit_cache.dir
-/home/t3m3d/Documents/GitHub/klennie/build/CMakeFiles/rebuild_cache.dir

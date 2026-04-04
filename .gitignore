@@ -1,2 +1,17 @@
+# Installer output
+/installer
+
+# Build output
+ktop.exe
+ktop
+*_tmp.c
+
+# Old CMake/package build artifacts
 /build
+/pkg
+/src
+/kprocview-git
 *.tar*
+*.pkg.tar.zst
+CMakeLists.txt
+PKGBUILD

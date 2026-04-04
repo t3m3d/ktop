@@ -1,0 +1,20 @@
+// platform.krh — jxt declarations for platform.h
+jxt {
+    c "platform.h"
+
+    func pvPlatform()
+    func pvEnableVT100()
+    func pvSetRaw()
+    func pvRestoreTerm()
+    func pvKbhit()
+    func pvGetch()
+    func pvTermsize()
+    func pvSleep(ms)
+    func pvListPids()
+    func pvWinSnapshot()
+    func pvWinCount()
+    func pvWinPid(i)
+    func pvWinName(i)
+    func pvWinCpu(i)
+    func pvWinRss(i)
+}
