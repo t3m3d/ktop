@@ -20,6 +20,9 @@
       "Bash(git -C /c/Users/brian/Documents/GitHub/krypton diff --name-only)",
       "Bash(git -C /c/Users/brian/Documents/GitHub/krypton diff --cached --name-only)",
       "Bash(xargs grep:*)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\brian\\Documents\\GitHub\\krypton\\headers"
     ]
   }
 }
