@@ -1,5 +1,4 @@
-import "platform.krh"
-import "windows.krh"
+import "platform.k"
 
 import "utils.k"
 import "process.k"
@@ -44,13 +43,14 @@ just run {
     uiClear()
 
     // ── State ────────────────────────────────────────────────
-    let scrollOff   = "0"
-    let prevTotal   = "0"
-    let prevMap     = ""
-    let procs       = ""
-    let uptime      = ""
-    let mem         = "0,0"
-    let loadavg     = ""
+    let scrollOff    = "0"
+    let prevTotal    = "0"
+    let prevMap      = ""
+    let prevWinState = "0:0:0:0:0:0"
+    let procs        = ""
+    let uptime       = ""
+    let mem          = "0,0"
+    let loadavg      = ""
 
     // ── Main loop ────────────────────────────────────────────
     while "1" == "1" {
@@ -65,7 +65,7 @@ just run {
         let key = pvGetch()
         if key == "q" || key == "Q" {
             uiCleanup()
-            pvRestoreTerm()
+            pvRestoreTerm("")
             emit 0
         }
         if key == "c" || key == "C" { sortKey = "cpu"   scrollOff = "0" }
@@ -93,15 +93,17 @@ just run {
 
         // Collect processes
         if isWin == "1" {
-            procs = collectWindowsProcs()
+            let winResult = collectWindowsProcs(prevWinState)
+            let sep       = indexOf(winResult, "\n---SEP---\n")
+            procs         = substring(winResult, 0, sep)
+            prevWinState  = afterpart(winResult, "\n---SEP---\n")
         } else {
-            let result   = collectLinuxProcs(prevTotal, prevMap)
-            let sep1     = indexOf(result, "\n---SEP---\n")
-            let afterSep = afterpart(result, "\n---SEP---\n")
-            let sep2     = indexOf(afterSep, "\n---SEP---\n")
-            procs    = substring(result, 0, sep1)
-            prevTotal = firstpart(afterSep, "\n---SEP---\n")
-            prevMap  = afterpart(afterSep, "\n---SEP---\n")
+            let result    = collectLinuxProcs(prevTotal, prevMap)
+            let sep1      = indexOf(result, "\n---SEP---\n")
+            let afterSep  = afterpart(result, "\n---SEP---\n")
+            procs         = substring(result, 0, sep1)
+            prevTotal     = firstpart(afterSep, "\n---SEP---\n")
+            prevMap       = afterpart(afterSep, "\n---SEP---\n")
         }
 
         // Sort

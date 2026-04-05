@@ -3,8 +3,6 @@
 // cpu_hundredths = cpu% * 100  (e.g. 125 = 1.25%)
 // rss_kb         = working set in KB
 
-import "platform.krh"
-
 // ── Linux /proc parsing ─────────────────────────────────────
 
 // linuxTotalCpu: read total CPU jiffies from /proc/stat
@@ -99,22 +97,15 @@ func collectLinuxProcs(prevTotal, prevMap) {
 }
 
 // ── Windows process collection ──────────────────────────────
+// prevState: "idleLo:idleHi:kernLo:kernHi:userLo:userHi\npid:ktLo:ktHi:utLo:utHi\n..."
+// Returns:   "procs\n---SEP---\nnewState"
 
-func collectWindowsProcs() {
-    pvWinSnapshot()
-    let n = toInt(pvWinCount())
-    let procs = ""
-    let i = "0"
-    while toInt(i) < n {
-        let pid  = pvWinPid(i)
-        let name = pvWinName(i)
-        let cpuH = pvWinCpu(i)
-        let rss  = pvWinRss(i)
-        let line = pid + "|" + name + "|" + cpuH + "|" + rss
-        procs = appendLine(procs, line)
-        i = toInt(i) + 1 + ""
-    }
-    emit procs
+func collectWindowsProcs(prevState) {
+    let result   = pvWinSnapshot(prevState)
+    let sep      = indexOf(result, "\n---SEP---\n")
+    let procs    = substring(result, 0, sep)
+    let newState = afterpart(result, "\n---SEP---\n")
+    emit procs + "\n---SEP---\n" + newState
 }
 
 // ── Sorting ─────────────────────────────────────────────────

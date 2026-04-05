@@ -1,12 +1,12 @@
 # Installer output
 /installer
-
+/.claude
 # Build output
 ktop.exe
 ktop
 *_tmp.c
-
-# Old CMake/package build artifacts
+*.iss
+.claude/
 /build
 /pkg
 /src

@@ -1,0 +1,12 @@
+// lx_helpers.krh — Krypton declarations for lx_helpers.h (Linux only)
+jxt {
+    c "lx_helpers.h"
+
+    func lxSetRaw()
+    func lxRestoreTerm()
+    func lxKbhit() -> INT
+    func lxGetch()
+    func lxTermsize()
+    func lxSleep(ms)
+    func lxListPids()
+}
