@@ -38,7 +38,7 @@ just run {
     // ── Init ─────────────────────────────────────────────────
     let isWin = pvPlatform()
     pvEnableVT100()
-    pvSetRaw()
+    let savedTerm = pvSetRaw()
     uiInit()
     uiClear()
 
@@ -65,7 +65,7 @@ just run {
         let key = pvGetch()
         if key == "q" || key == "Q" {
             uiCleanup()
-            pvRestoreTerm("")
+            pvRestoreTerm(savedTerm)
             emit 0
         }
         if key == "c" || key == "C" { sortKey = "cpu"   scrollOff = "0" }

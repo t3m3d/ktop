@@ -1,76 +1,29 @@
 // platform_win.k — Windows platform implementation in Krypton
 // Imported by build.bat (copied to platform.k before compilation)
 // Provides all pv* functions + pvUptime/pvMem/pvLoadavg for Windows
+//
+// 2026-05-12: terminal control (raw mode, kbhit, getch, size, sleep,
+// VT100 enable) moved into stdlib/terminal.k. This file keeps the
+// Windows-specific process-snapshot and system-info code that doesn't
+// belong in a generic terminal stdlib.
 
-import "headers/windows.krh"
-import "headers/conio.krh"
-import "headers/process.krh"
+import "head:windows"
+import "head:process"
+import "k:terminal"
 
 // ── Platform detection ───────────────────────────────────────
 
 func pvPlatform() { emit "1" }
 
-// ── Console setup ────────────────────────────────────────────
+// ── Terminal control (thin shims onto k:terminal) ────────────
 
-func pvEnableVT100() {
-    let h = GetStdHandle(toHandle("-10"))
-    let mode = structNew("_DWord")
-    GetConsoleMode(h, mode)
-    let m = toInt(structGet(mode, "_DWord", "val"))
-    // Set ENABLE_VIRTUAL_TERMINAL_PROCESSING (bit 2 = 4) if not already set
-    if m / 4 % 2 == 0 {
-        SetConsoleMode(h, toHandle(m + 4 + ""))
-    }
-    SetConsoleOutputCP(toHandle("65001"))
-    emit ""
-}
-
-func pvSetRaw()         { emit "" }
-func pvRestoreTerm(saved) { emit "" }
-
-// ── Keyboard input ───────────────────────────────────────────
-
-func pvKbhit() {
-    emit _kbhit() > 0 ? "1" : "0"
-}
-
-func pvGetch() {
-    if _kbhit() == "0" { emit "" }
-    let c = toInt(_getch())
-    if c == 0 || c == 224 {
-        let c2 = toInt(_getch())
-        if c2 == 72 { emit "UP" }
-        if c2 == 80 { emit "DOWN" }
-        if c2 == 73 { emit "PGUP" }
-        if c2 == 81 { emit "PGDN" }
-        emit ""
-    }
-    emit fromCharCode(c)
-}
-
-// ── Terminal size ────────────────────────────────────────────
-
-func pvTermsize() {
-    let csbi = structNew("CONSOLE_SCREEN_BUFFER_INFO")
-    let h = GetStdHandle(toHandle("-11"))
-    GetConsoleScreenBufferInfo(h, csbi)
-    let l = toInt(structGet(csbi, "CONSOLE_SCREEN_BUFFER_INFO", "srWindowLeft"))
-    let r = toInt(structGet(csbi, "CONSOLE_SCREEN_BUFFER_INFO", "srWindowRight"))
-    let t = toInt(structGet(csbi, "CONSOLE_SCREEN_BUFFER_INFO", "srWindowTop"))
-    let b = toInt(structGet(csbi, "CONSOLE_SCREEN_BUFFER_INFO", "srWindowBottom"))
-    let cols = r - l + 1
-    let rows = b - t + 1
-    if cols <= 0 { cols = 80 }
-    if rows <= 0 { rows = 24 }
-    emit cols + "," + rows
-}
-
-// ── Sleep ────────────────────────────────────────────────────
-
-func pvSleep(ms) {
-    Sleep(toHandle(ms))
-    emit ""
-}
+func pvEnableVT100()      { termEnableVT100()  emit "" }
+func pvSetRaw()           { emit termSetRaw() }
+func pvRestoreTerm(saved) { termRestore(saved) emit "" }
+func pvKbhit()            { emit termKbhit() }
+func pvGetch()            { emit termGetch() }
+func pvTermsize()         { emit termSize() }
+func pvSleep(ms)          { termSleep(ms)  emit "" }
 
 // ── Linux stubs (never called on Windows) ────────────────────
 
